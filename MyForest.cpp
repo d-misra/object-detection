@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "MyForest.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/objdetect.hpp"
