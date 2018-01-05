@@ -8,13 +8,17 @@ using namespace std;
 class MyForest{
 public:
 	MyForest();
-	void create(int size_forest);
-	void train(Mat features, Mat labels, int size_samples);
-	int predict(vector<float> descriptors) const;
+	void create(int size_forest, int CVFolds, int MaxDepth, int MinSample_Count, int MaxCategories);
+	void train(vector<Mat1f> label_per_feats, Mat labels, int size_samples__per_class[]);
+	double * predict(vector<float> test_descriptors) const;
 
 
 private:
 	Ptr<DTrees> myDTree[100];
+	int CVFolds;
+	int MaxDepth; 
+	int MinSample_Count; 
+	int MaxCategories;
 	int size_forest;
 };
 
