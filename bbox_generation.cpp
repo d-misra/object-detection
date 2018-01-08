@@ -73,6 +73,17 @@ int main(int argc, char** argv) {
         for(int i = 0; i < rects.size(); i++) {
             if (i < numShowRects) {
                 rectangle(imOut, rects[i], Scalar(0, 255, 0));
+                cv::Mat croppedImage = imOut(rects[i]);
+                cv::Mat resizedImage;
+                cv::resize(
+                    croppedImage,           // Input Image
+                    resizedImage,           // Output Image
+                    cv::Size(120, 120),     // Desired Size
+                    0, 0,                   // Scaling Ratio: We don't need that because we already specified output size
+                    CV_INTER_LINEAR
+                );
+                imshow("Output", resizedImage);
+                cv::waitKey();
             }
             else {
                 break;
