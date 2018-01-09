@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "MyForest.h"
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/core.hpp"
@@ -12,7 +12,10 @@
 #include <math.h>
 #include <string> 
 #include <time.h>       // time 
-
+#include <random>
+#include <ctime> 
+#include <cstdlib>
+#include <tuple>
 using namespace std;
 using namespace cv;
 using namespace cv::ml;
@@ -54,8 +57,13 @@ void MyForest::create(int p_size_forest, int p_CVFolds, int p_MaxDepth, int p_Mi
 
 ///Train Forest: each Tree is trained with a random part of the complete input data
 void MyForest::train(vector<Mat1f> label_per_feats, Mat labels, int size_samples__per_class[]) {
+	// for task 3, either change 6 to number of class, or use new, delete and a variable as a parameter for the number of class, don't forget to change MyForest.h if paramaters are changed
+	//int number_of_class; uncomment line 62 63 139 and put line 61 in parameters
+	//int* starting_index_class = new int[number_of_class];
+	//std::memset(starting_index_class, 0, sizeof(starting_index_class))
 	int size_samples__per_class[] = {49, 66, 42, 53, 67, 110};//Number of pictures per class // This should be put as a comments or delete parameter
-	int starting_index_class[6] = {0,0,0,0,0,0};
+	int starting_index_class[6] = {0,0,0,0,0,0}; 
+	///Determining the starting index in the table for each class, knowing the number of elements per class and assuming they are sorted
 	for (int i = 0; i < 6; i++) {
 		if (i = 0) {
 			starting_index_class[i] = size_samples__per_class[i];
@@ -79,30 +87,48 @@ void MyForest::train(vector<Mat1f> label_per_feats, Mat labels, int size_samples
 	vector<Mat1f> feat_trainset_per_tree(size_forest);
 	vector<Mat> labels_trainset_per_tree(size_forest);
 
+	time_t seconds;
+	time(&seconds);
+	int srandomNum;
+	//cout << "\nseconds" << seconds;
+	srand((unsigned int)seconds);
+	
+	///For each tree in the forest, we create a trainset of features that will be different each time
 	for (int curr_tree = 0; curr_tree <size_forest; curr_tree++)
 	{
 
 		int min, max;
 		min = 0;
 		cout << "\n\nGenerate the random train set for the tree " << curr_tree;
+		srandomNum = rand() % ((unsigned int)seconds - min + 1) + min;
 		//below for loop iterates through all the seperated descriptor classes based on labels and generate
 		//random index and add it to particular
 		for (int curr_class = 0; curr_class < sizeof(size_samples__per_class) / sizeof(*size_samples__per_class); curr_class++)
 		{
 			max = size_samples__per_class[curr_class] - 1;
-			srand(time(NULL)); // Seed the time
+			int* check_duplicate = new int[max+1];
+			std::memset(check_duplicate, 0, sizeof(check_duplicate));
 			int randomNum;
 			cout << "\n random idx from clas " << curr_class << "\n";
 			for (int i = 0; i<min_label; i++)
 			{
 				randomNum = rand() % (max - min + 1) + min;
-				cout << randomNum << ",";
-				feat_trainset_per_tree[curr_tree].push_back(label_per_feats[curr_class].row(randomNum));
-				labels_trainset_per_tree[curr_tree].push_back(curr_class);
+				//cout << randomNum << ",";
+				if (check_duplicate[randomNum] == 0) {
+					check_duplicate[randomNum]++;
+					cout << randomNum << ",";
+					feat_trainset_per_tree[curr_tree].push_back(label_per_feats[curr_class].row(randomNum));
+					labels_trainset_per_tree[curr_tree].push_back(curr_class);
+				}
+				else if(check_duplicate[randomNum] != 0) {
+					i--;
+				}
 			}
-
+			delete[] check_duplicate;
 		}
+		srand((unsigned int)srandomNum);
 	}
+
 
 	//gng to iterate through all the trees
 	for (int idx = 0; idx <size_forest; idx++)
@@ -111,10 +137,12 @@ void MyForest::train(vector<Mat1f> label_per_feats, Mat labels, int size_samples
 		//code pending to create random subsets
 		myDTree[idx]->train(cv::ml::TrainData::create(feat_trainset_per_tree[idx], cv::ml::ROW_SAMPLE, labels_trainset_per_tree[idx]));
 	}
+
+	//delete[] starting_index_class;
 }
 
 ///Predict a class for a data : input should be the HOG descriptor
-double * MyForest::predict(vector<float> test_descriptors) const {
+double * MyForest::predict(vector<float> test_descriptors) {
 	int curr_predictd;
 	Mat1f predictd_array;
 	int* predictd_class = new int[MaxCategories];

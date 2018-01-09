@@ -10,7 +10,7 @@ public:
 	MyForest();
 	void create(int size_forest, int CVFolds, int MaxDepth, int MinSample_Count, int MaxCategories);
 	void train(vector<Mat1f> label_per_feats, Mat labels, int size_samples__per_class[]);
-	double * predict(vector<float> test_descriptors) const;
+	double * predict(vector<float> test_descriptors) ;
 
 
 private:
