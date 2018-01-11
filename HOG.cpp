@@ -1,16 +1,47 @@
-void visualizeHOG(cv::Mat img, std::vector<float> &feats, cv::HOGDescriptor hog_detector, int scale_factor = 3);
-/*
- * img - the image used for computing HOG descriptors. **Attention here the size of the image should be the same as the window size of your cv::HOGDescriptor instance **
- * feats - the hog descriptors you get after calling cv::HOGDescriptor::compute
- * hog_detector - the instance of cv::HOGDescriptor you used
- * scale_factor - scale the image *scale_factor* times larger for better visualization
- */
+#include "HOG.h"
 
+#include <vector>
+#include <string>
 
-void visualizeHOG(cv::Mat img, std::vector<float> &feats, cv::HOGDescriptor hog_detector, int scale_factor) {
+#include <opencv/cv.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/objdetect.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
+HOG::HOG() : 
+    _winSize(cv::Size(120, 120)), 
+    _blockSize(cv::Size(20, 20)),
+    _blockStride(cv::Size(10, 10)),
+    _cellSize(cv::Size(10, 10)),
+    _nbins (9) {
+        _hog = cv::HOGDescriptor(_winSize, _blockSize, _blockStride, _cellSize, _nbins,
+        _derivAperture, _winSigma, _histogramNormType, _L2HysThreshold,
+        _gammaCorrection, _nlevels, _signedGradient);
+    }
+
+cv::HOGDescriptor& HOG::getHogDetector() {
+    return _hog;
+}
+
+void HOG::computeHOG(cv::Mat img, std::vector<float>& descriptors) {
+    // 1. Convert To Gray Image
+    cv::cvtColor(img, img_gray, CV_BGR2GRAY);
+    
+    // 2. Apply some blur (optional)
+    // GaussianBlur(src, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
+
+    // Scale To Size(120, 120) Image
+    cv::resize(img_gray, img_gray_resized, cv::Size(120, 120), 0, 0, cv::INTER_AREA);
+
+    // Compute HOG
+    _hog.compute(img_gray_resized, descriptors);
+}
+
+void HOG::visualizeHOG(cv::Mat img, std::vector<float> &feats, cv::HOGDescriptor hog_detector, int scale_factor) {
     cv::Mat visual_image;
     resize(img, visual_image, cv::Size(img.cols * scale_factor, img.rows * scale_factor));
+
 
     int n_bins = hog_detector.nbins;
     float rad_per_bin = 3.14 / (float) n_bins;
@@ -18,6 +49,7 @@ void visualizeHOG(cv::Mat img, std::vector<float> &feats, cv::HOGDescriptor hog_
     cv::Size cell_size = hog_detector.cellSize;
     cv::Size block_size = hog_detector.blockSize;
     cv::Size block_stride = hog_detector.blockStride;
+
 
     // prepare data structure: 9 orientation / gradient strenghts for each cell
     int cells_in_x_dir = win_size.width / cell_size.width;
@@ -141,5 +173,4 @@ void visualizeHOG(cv::Mat img, std::vector<float> &feats, cv::HOGDescriptor hog_
     cv::imshow("HOG vis", visual_image);
     cv::waitKey(-1);
     cv::imwrite("hog_vis.jpg", visual_image);
-
 }

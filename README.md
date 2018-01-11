@@ -2,16 +2,16 @@
 
 ## Compile The Code
 
-In order to compile the code on a Unix environment, you need to make sure that you install the opencv and a g++ compiler.
-
-Run the following:
+In order to build the project, you need to run:
 ```
-g++ $(pkg-config --cflags --libs opencv) executable.cpp -o {Executable}
+make
 ```
 
-Example Compilation of `bbox_generation.cpp`:
+That shall yield in three different executables for each part of the assignments:
 ```
-g++ $(pkg-config --cflags --libs opencv) bbox_generation.cpp -o bbox_generation
+./task1
+./task2
+./task3
 ```
 
 ## Resources:

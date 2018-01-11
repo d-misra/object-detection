@@ -1,3 +1,7 @@
 *.gch
 *.out
 *.swp
+*.jpg
+*.vscode
+task1
+bbox_generation
