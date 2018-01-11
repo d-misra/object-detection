@@ -1,25 +1,9 @@
-#include <opencv2/core/core.hpp>
-#include <opencv2/objdetect.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/ml.hpp>
-#include <string>
 #include <iostream>
+
+#include <opencv2/core/core.hpp>
 #include <boost/filesystem.hpp>
 
 #include "HOG.cpp"
-
-// #include "MyForest.h"
-// #include "hog_visualization.cpp"
-
-
-// Strings & Vectors
-using std::string;
-using std::vector;
-
-///set opencv and c++ namespaces
-using namespace cv::ml;
-using namespace cv;
 
 // Boost File System
 namespace bfs = boost::filesystem;
