@@ -70,7 +70,7 @@ void MyForest::train(vector<Mat1f> label_per_feats, Mat labels, int size_samples
 	//std::memset(starting_index_class, 0, sizeof(starting_index_class))
 	//int size_samples__per_class[] = {49, 66, 42, 53, 67, 110};//Number of pictures per class // This should be put as a comments or delete parameter
 	std::vector<int> starting_index_class(MaxCategories,0); 
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < MaxCategories; i++) {
 		if (i == 0) {
 			starting_index_class[i] = size_samples__per_class[i];
 		}
@@ -114,7 +114,7 @@ void MyForest::train(vector<Mat1f> label_per_feats, Mat labels, int size_samples
 			//int* check_duplicate = new int[max+1];
 			//std::memset(check_duplicate, 0, sizeof(check_duplicate));
 			int randomNum;
-			cout << "\n random idx from clas " << curr_class << "\n";
+			cout << "\n random idx from class " << curr_class << "\n";
 			for (int i = 0; i<min_label; i++)
 			{
 				randomNum = rand() % (max - min + 1) + min;
@@ -154,8 +154,13 @@ void MyForest::train(vector<Mat1f> label_per_feats, Mat labels, int size_samples
 double * MyForest::predict(vector<float> test_descriptors) {
 	int curr_predictd;
 	Mat1f predictd_array;
+	const int max = MaxCategories;
 	int* predictd_class = new int[MaxCategories];
-	std::memset(predictd_class, 0, sizeof(predictd_class));
+	//int predictd_class[6];
+
+	//std::memset(predictd_class, 0, sizeof(predictd_class));
+
+	std::memset(predictd_class, 0, sizeof(int)*MaxCategories);
 	//predictd_class is used the number of times each class is predicted by the trees in- 
 	//- the forest
 
@@ -165,14 +170,28 @@ double * MyForest::predict(vector<float> test_descriptors) {
 		predictd_class[curr_predictd]++;
 		//cout<<"\npredicted class after updating "<< predictd_class[curr_predictd];                                           
 	}
+
+	cout << "\n the predicted class array = ";
+	for (int i = 0; i<size_forest; i++)
+	{
+		cout << predictd_class[i] << ",";
+	}
 	///Determination of the class that has been predicted the most by trees
-	int max_predicted_class = MaxCategories + 1;//assign a class/label outside of the catrgory to debug -
+	int max_predicted_class = 0;//assign a class/label outside of the catrgory to debug -
 											  //incase of error
-	for (int class_idx = 0; class_idx < (MaxCategories - 1); class_idx++)
+	/*for (int class_idx = 0; class_idx < (MaxCategories - 1); class_idx++)
 	{
 		if (predictd_class[class_idx]<predictd_class[class_idx + 1])
 			max_predicted_class = class_idx + 1;
 		else if (predictd_class[class_idx]>predictd_class[class_idx + 1])
+			max_predicted_class = class_idx;
+
+
+	}
+	*/
+	for (int class_idx = 1; class_idx < MaxCategories; class_idx++)
+	{
+		if (predictd_class[class_idx] > predictd_class[max_predicted_class])
 			max_predicted_class = class_idx;
 
 	}
