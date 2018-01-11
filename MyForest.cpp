@@ -16,9 +16,16 @@
 #include <ctime> 
 #include <cstdlib>
 #include <tuple>
+#include <iostream>
 using namespace std;
 using namespace cv;
 using namespace cv::ml;
+
+
+using namespace cv;
+using namespace std;
+
+
 
 ///Constructor
 MyForest::MyForest() {
@@ -61,19 +68,19 @@ void MyForest::train(vector<Mat1f> label_per_feats, Mat labels, int size_samples
 	//int number_of_class; uncomment line 62 63 139 and put line 61 in parameters
 	//int* starting_index_class = new int[number_of_class];
 	//std::memset(starting_index_class, 0, sizeof(starting_index_class))
-	int size_samples__per_class[] = {49, 66, 42, 53, 67, 110};//Number of pictures per class // This should be put as a comments or delete parameter
-	int starting_index_class[6] = {0,0,0,0,0,0}; 
-	///Determining the starting index in the table for each class, knowing the number of elements per class and assuming they are sorted
+	//int size_samples__per_class[] = {49, 66, 42, 53, 67, 110};//Number of pictures per class // This should be put as a comments or delete parameter
+	std::vector<int> starting_index_class(MaxCategories,0); 
 	for (int i = 0; i < 6; i++) {
-		if (i = 0) {
+		if (i == 0) {
 			starting_index_class[i] = size_samples__per_class[i];
 		}
 		else {
 			starting_index_class[i] = size_samples__per_class[i] + starting_index_class[i-1];
 		}
 	}
+
 	int min_label = size_samples__per_class[0];
-	for (int class_idx = 1; class_idx < (MaxCategories); class_idx++)
+	for (int class_idx = 1; class_idx < MaxCategories; class_idx++)
 	{
 		if (size_samples__per_class[class_idx] < min_label)
 			min_label = size_samples__per_class[class_idx];
@@ -92,43 +99,44 @@ void MyForest::train(vector<Mat1f> label_per_feats, Mat labels, int size_samples
 	int srandomNum;
 	//cout << "\nseconds" << seconds;
 	srand((unsigned int)seconds);
-	
-	///For each tree in the forest, we create a trainset of features that will be different each time
 	for (int curr_tree = 0; curr_tree <size_forest; curr_tree++)
 	{
-
-		int min, max;
-		min = 0;
+		int min = 0;
+		int max;
 		cout << "\n\nGenerate the random train set for the tree " << curr_tree;
 		srandomNum = rand() % ((unsigned int)seconds - min + 1) + min;
 		//below for loop iterates through all the seperated descriptor classes based on labels and generate
-		//random index and add it to particular
-		for (int curr_class = 0; curr_class < sizeof(size_samples__per_class) / sizeof(*size_samples__per_class); curr_class++)
+		//random index and add it to particular sizeof(size_samples__per_class) / sizeof(*size_samples__per_class)
+		for (int curr_class = 0; curr_class < MaxCategories; curr_class++)
 		{
 			max = size_samples__per_class[curr_class] - 1;
-			int* check_duplicate = new int[max+1];
-			std::memset(check_duplicate, 0, sizeof(check_duplicate));
+			std::vector<int> check_duplicate(max +1, 0);
+			//int* check_duplicate = new int[max+1];
+			//std::memset(check_duplicate, 0, sizeof(check_duplicate));
 			int randomNum;
 			cout << "\n random idx from clas " << curr_class << "\n";
 			for (int i = 0; i<min_label; i++)
 			{
 				randomNum = rand() % (max - min + 1) + min;
 				//cout << randomNum << ",";
+				if (check_duplicate[randomNum] != 0) {
+					i--;
+				}
 				if (check_duplicate[randomNum] == 0) {
 					check_duplicate[randomNum]++;
 					cout << randomNum << ",";
+					//Mat temp_feat = label_per_feats[curr_class].row(randomNum);
 					feat_trainset_per_tree[curr_tree].push_back(label_per_feats[curr_class].row(randomNum));
+
+					//feat_trainset_per_tree[curr_tree].push_back(temp_feat);
 					labels_trainset_per_tree[curr_tree].push_back(curr_class);
 				}
-				else if(check_duplicate[randomNum] != 0) {
-					i--;
-				}
+
 			}
-			delete[] check_duplicate;
+			//delete[] check_duplicate;
 		}
 		srand((unsigned int)srandomNum);
 	}
-
 
 	//gng to iterate through all the trees
 	for (int idx = 0; idx <size_forest; idx++)
@@ -137,6 +145,7 @@ void MyForest::train(vector<Mat1f> label_per_feats, Mat labels, int size_samples
 		//code pending to create random subsets
 		myDTree[idx]->train(cv::ml::TrainData::create(feat_trainset_per_tree[idx], cv::ml::ROW_SAMPLE, labels_trainset_per_tree[idx]));
 	}
+
 
 	//delete[] starting_index_class;
 }
