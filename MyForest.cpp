@@ -204,3 +204,20 @@ double * MyForest::predict(vector<float> test_descriptors) {
 	double output[] = {max_predicted_class,confidence};
 	return output;
 }
+
+void MyForest::save(string ForestName) {
+	cout << "\n\n Forest Saving ";
+
+	for (int tree_idx = 0; tree_idx < size_forest; tree_idx++) {
+		myDTree[tree_idx]->save(ForestName + to_string(tree_idx));
+		cout << "\n\n Tree n#" << tree_idx <<" has been saved";
+	}
+}
+
+void MyForest::load(string ForestName, int nbr_trees) {
+	cout << "\n\n Forest Loading ";
+	for (int tree_idx = 0; tree_idx < nbr_trees; tree_idx++) {
+		myDTree[tree_idx] = DTrees::load(ForestName + to_string(tree_idx));
+		cout << "\n\n Tree n#" << tree_idx << " has been loaded";
+	}
+}
