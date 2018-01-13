@@ -102,21 +102,6 @@ int main(int argc, char** argv)
         vec_testing_labels.push_back(testing_labels.at<int>(i, 0));
     }
 
-    // printf("testing_labels= %i, predicted_labels= %i ...\n", 
-    //     testing_labels.size().height,
-    //     predicted_labels.size().height
-    // );
-    // printf("vec_testing_labels= %i, vec_predicted_labels= %i ...\n", 
-    //     vec_testing_labels.size(), 
-    //     vec_predicted_labels.size()
-    // );
-
-    // cout << "testing_labels= "<< endl << " "  << testing_labels << endl << endl;
-    // cout << "vec_testing_labels= "<< endl;
-    // for (int i = 0; i < vec_testing_labels.size(); i++) {
-    //     cout << vec_testing_labels.at(i) << endl;
-    // }
-
     // Evaluate classifier
     external::Confusion confusion(vec_testing_labels, vec_predicted_labels);
     confusion.print();

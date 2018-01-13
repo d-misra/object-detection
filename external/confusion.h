@@ -34,42 +34,23 @@ namespace external {
         }
 
         Confusion(vector<int> targets, vector<int> outputs) {
-            // printf("Confusion::Confusion (constructor) :: Start\n");
             vector<vector<double> > tar;
             vector<vector<double> > out;
-            // printf("Confusion::Confusion (constructor) :: Convert To Doubles\n");
             convertToBooleanMatrix(targets, outputs, tar, out);
-            // printf("Confusion::Confusion (constructor) :: Calculate Confusion\n");
             confusion(tar, out);
         }
 
         void convertToBooleanMatrix(vector<int> targets, vector<int> outputs, vector<vector<double> > &tar,
                                     vector<vector<double> > &out) {
-            // printf("Confusion::Confusion (convertToBooleanMatrix) :: Start\n");
             int numClasses =
                     *max_element(targets.begin(), targets.end()) - *min_element(targets.begin(), targets.end()) + 1;
             
-            // printf("Confusion::Confusion (convertToBooleanMatrix) numClasses= %i\n", numClasses);
             int numSamples = targets.size();
             vector<vector<double>> t(numClasses, vector<double>(numSamples, 0));
             vector<vector<double>> o(numClasses, vector<double>(numSamples, 0));
 
-            // cout << "targets= ";
-            // for (int i = 0; i < targets.size(); i++) {
-            //     cout << " " << targets.at(i);
-            // }
-            // cout << endl << "outputs= ";
-            // for (int i = 0; i < outputs.size(); i++) {
-            //     cout << " " << outputs.at(i);
-            // }
-            // cout << endl;
-
-            // printf("Confusion::Confusion (convertToBooleanMatrix) t.size= (%i, %i)\n", t.size(), t[0].size());
-            // printf("Confusion::Confusion (convertToBooleanMatrix) o.size= (%i, %i)\n", o.size(), o[0].size());
 
             for (int i = 0; i < numSamples; ++i) {
-                // printf("Confusion::Confusion (convertToBooleanMatrix) i= %i, targets.at(i)= %i, t[targets.at(i)][i]= %i\n", i, targets.at(i), t[targets.at(i)][i]);
-                // printf("Confusion::Confusion (convertToBooleanMatrix) i= %i, outputs.at(i)= %i, outputs[i]= %i\n", i, outputs.at(i), outputs[i]);
                 
                 t[targets.at(i)][i] = 1;
                 o[outputs.at(i)][i] = 1;
@@ -77,7 +58,6 @@ namespace external {
 
             tar = t;
             out = o;
-            // printf("Confusion::Confusion (convertToBooleanMatrix) :: End\n");
         }
 
         void confusion(vector<vector<double> > targets, vector<vector<double> > outputs) {

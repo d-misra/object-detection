@@ -35,18 +35,13 @@ namespace tdcv {
     }
 
     void Dataset::random_subsample(cv::Mat1f& features, cv::Mat& labels) {
-        // printf("Dataset::Dataset (random_subsample) :: Start\n");
-        
         int randomNum;
         int min_features = min_features_per_label();
 
-        // printf("Dataset::Dataset (random_subsample) min_features= %i\n", min_features);
-        
         std::set<int> visited_indices_per_label;
 
         for (int curr_class = 0; curr_class < _dataset.size(); curr_class++)
         {
-            // printf("Dataset::Dataset (random_subsample) _dataset= (%i, %i)\n", _dataset[curr_class].size().height, _dataset[curr_class].size().width);
             visited_indices_per_label.clear();
 
             // Random Number Generator
@@ -62,24 +57,11 @@ namespace tdcv {
                 
                 if (visited_indices_per_label.count(randomNum) == 0) {
                     visited_indices_per_label.insert(randomNum);
-
-                    // printf("%i, ", randomNum);
-                    
                     features.push_back(_dataset[curr_class].row(randomNum));
                     labels.push_back(curr_class);
                 }
             }
-
-            // printf("\n");
-            // printf("Dataset::Dataset (random_subsample) set[%i].size = %i\n", curr_class, visited_indices_per_label.size());
         }
-
-        // printf("Dataset::Dataset (random_subsample) features= (%i, %i), labels= (%i, %i)\n", 
-            // features.size().height, features.size().width,
-            // labels.size().height, labels.size().width
-        // );
-
-        // printf("Dataset::Dataset (random_subsample) :: End\n");
     }
 
     void Dataset::as_matrix(cv::Mat1f& features, cv::Mat& labels) {
