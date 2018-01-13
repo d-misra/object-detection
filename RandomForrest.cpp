@@ -11,7 +11,6 @@
 
 namespace tdcv {
     RandomForrest::RandomForrest(int n_trees, int n_labels, int _maxDepth, int _cvFold, int _minSampleCount) : _nLabels(n_labels) {
-        // printf("RandomForrest::RandomForrest (constructor) :: Start\n");
         for(int i = 0; i < n_trees; i++) {
             _decision_trees.push_back(cv::ml::DTrees::create());
             
@@ -19,13 +18,12 @@ namespace tdcv {
             _decision_trees[i]->setMinSampleCount(_minSampleCount);
             _decision_trees[i]->setCVFolds(_cvFold);
         }
-        // printf("RandomForrest::RandomForrest (constructor) :: End\n");
     }
 
     void RandomForrest::train(Dataset& dataset) {
         cv::Mat1f features;
         cv::Mat labels;
-        // printf("RandomForrest::RandomForrest (train) :: Start\n");
+
         for(int i = 0; i < _decision_trees.size(); i++) {
             // Remove contents of features/labels from previous iterations
             features.release();
@@ -33,21 +31,13 @@ namespace tdcv {
 
             printf("RandomForrest::RandomForrest (train) tree= %i\n", i+1);
             dataset.random_subsample(features, labels);
-            
-            // printf("RandomForrest::RandomForrest (train) features= (%i, %i), labels= (%i, %i)\n", 
-            //     features.size().height, features.size().width,
-            //     labels.size().height, labels.size().width
-            // );
 
             _decision_trees[i]->train(cv::ml::TrainData::create(
                 features,
                 cv::ml::ROW_SAMPLE,
                 labels
             ));
-
-            // printf("RandomForrest::RandomForrest (train) i= %i :: End\n", i);
         }
-        // printf("RandomForrest::RandomForrest (train) :: End\n");
     }
 
     void RandomForrest::predict(const cv::Mat1f& features, cv::Mat& predicted_labels, cv::Mat& predicted_confidences) {
@@ -68,13 +58,11 @@ namespace tdcv {
 
             for (int j = 0; j < _decision_trees.size(); j++) {
                 prediction = _decision_trees[j]->predict(features.row(i));
-                // printf("RandomForrest::RandomForrest (predict) :: tree= %i, prediction=%i\n", j, prediction);
                 tree_predictions[prediction]++;
             }
 
             for (int k = 0; k < _nLabels; k++) {
                 confidence = (float)tree_predictions[k] / _decision_trees.size();
-                // printf("RandomForrest::RandomForrest (predict) :: confidence= %f, count= %i, tree_size= %i\n", confidence, tree_predictions[k], _decision_trees.size());
                 if (best_confidence < confidence) {
                     best_confidence = confidence;
                     best_prediction = k;
