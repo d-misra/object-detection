@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     cv::Mat image = cv::imread(image_file.c_str(), CV_LOAD_IMAGE_COLOR);
     std::vector<float> descriptors;
 
-    HOG hog;
+    tdcv::HOG hog;
     hog.computeHOG(image, descriptors);
     hog.visualizeHOG(image, descriptors, hog.getHogDetector());
 }
