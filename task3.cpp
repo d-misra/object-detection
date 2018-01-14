@@ -5,6 +5,7 @@
 
 #include "HOG.cpp"
 #include "RandomForrest.cpp"
+#include "SVM.cpp"
 #include "Dataset.cpp"
 #include "RegionProposal.cpp"
 #include "helpers.cpp"
@@ -43,7 +44,8 @@ int main(int argc, char** argv)
     tdcv::Dataset training_set(n_classes);
 
     // Classifier
-    tdcv::RandomForrest classifier(n_trees, n_classes);
+    // tdcv::RandomForrest classifier(n_trees, n_classes);
+    tdcv::SVM classifier;
 
     // Load Training & Testing Datasets
     tdcv::helpers::load_dataset(hog, data_path / "task3" / "train", n_classes, training_set);
@@ -60,6 +62,7 @@ int main(int argc, char** argv)
     bfs::directory_iterator classIterator{data_path / "task3" / "test"};
     std::vector<cv::Rect> box_proposals;
     std::vector<std::vector<cv::Rect> > box_proposals_per_label(n_classes);
+    std::vector<cv::Rect> box_proposals_valid;
     std::vector<float> descriptors;
     
     // Prediction Variables
@@ -87,64 +90,136 @@ int main(int argc, char** argv)
 
         cv::Mat visualization_image = image.clone();
 
-        // Generate Proposals & Extract Features
-        printf("Extracting features per region ...");
-        for(int i = 0; i < box_proposals.size(); i++) {
-            descriptors.clear();
+        /*
+        * Sliding Window Implementation (Works better than Selective Search)
+        */
+        // Parameters of your slideing window
+        int windows_n_rows = 120;
+        int windows_n_cols = 120;
+        
+        // Step of each window
+        int StepSlide = 5;
 
-            // Crop Image Proposal
-            cv::Mat image_proposal = image(box_proposals[i]);
-            
-            // Compute the hog features
-            hog.computeHOG(image_proposal, descriptors);
-            // hog.visualizeHOG(image_proposal, descriptors, hog.getHogDetector());
+        // Cycle row step
+        for (int row = 0; row <= image.rows - windows_n_rows; row += StepSlide)
+        {
+            // Cycle col step
+            for (int col = 0; col <= image.cols - windows_n_cols; col += StepSlide)
+            {
+                cv::Rect window(col, row, windows_n_rows, windows_n_cols);
+                cv::Mat image_proposal = image(window);
 
-            printf("Predicting label per region ...\n");
-            classifier.predict_one(cv::Mat1f(descriptors), proposal_label, proposal_confidence);
+                hog.computeHOG(image_proposal, descriptors);
+                
+                printf("Predicting label per region ...\n");
+                classifier.predict_one(cv::Mat1f(descriptors), proposal_label, proposal_confidence);
 
-            // Harsh Threshold On Confidence
-            if(proposal_confidence < 0.75) {
-                proposal_label = 3;
-            }
+                // Harsh Threshold On Confidence
+                if(proposal_confidence < 0.85) {
+                    proposal_label = 3;
+                }
 
-            printf("Prediction Label= %i ...\n", proposal_label);
+                // Box Proposals Per Label
+                box_proposals_per_label[proposal_label].push_back(window);
 
-            // Box Proposals Per Label
-            box_proposals_per_label[proposal_label].push_back(box_proposals[i]);
+                if (proposal_label == 0 || proposal_label == 1 || proposal_label == 2) {
+                    box_proposals_valid.push_back(window);
+                }
 
-            if (proposal_label == 0) {
-                cv::rectangle(
-                    visualization_image, 
-                    box_proposals[i], 
-                    cv::Scalar(255, 0, 0)
-                );
-            }
-            
-            if (proposal_label == 1) {
-                cv::rectangle(
-                    visualization_image, 
-                    box_proposals[i], 
-                    cv::Scalar(0, 255, 0)
-                );
-            } 
-            
-            if (proposal_label == 2) {
-                cv::rectangle(
-                    visualization_image, 
-                    box_proposals[i], 
-                    cv::Scalar(0, 0, 255)
-                );
+                if (proposal_label == 0) {
+                    cv::rectangle(
+                        visualization_image, 
+                        window, 
+                        cv::Scalar(255, 0, 0)
+                    );
+                }
+                
+                if (proposal_label == 1) {
+                    cv::rectangle(
+                        visualization_image, 
+                        window, 
+                        cv::Scalar(0, 255, 0)
+                    );
+                } 
+                
+                if (proposal_label == 2) {
+                    cv::rectangle(
+                        visualization_image, 
+                        window, 
+                        cv::Scalar(0, 0, 255)
+                    );
+                }
             }
         }
+
+        /*
+        * Selective Search Implementation
+        */
+        // // Generate Proposals & Extract Features
+        // printf("Extracting features per region ...");
+        // for(int i = 0; i < box_proposals.size(); i++) {
+        //     descriptors.clear();
+
+        //     // Crop Image Proposal
+        //     cv::Mat image_proposal = image(box_proposals[i]);
+            
+        //     // Compute the hog features
+        //     hog.computeHOG(image_proposal, descriptors);
+        //     // hog.visualizeHOG(image_proposal, descriptors, hog.getHogDetector());
+
+        //     printf("Predicting label per region ...\n");
+        //     classifier.predict_one(cv::Mat1f(descriptors), proposal_label, proposal_confidence);
+
+        //     // Harsh Threshold On Confidence
+        //     if(proposal_confidence < 0.75) {
+        //         proposal_label = 3;
+        //     }
+
+        //     printf("Prediction Label= %i ...\n", proposal_label);
+
+        //     // Box Proposals Per Label
+        //     box_proposals_per_label[proposal_label].push_back(box_proposals[i]);
+
+        //     if (proposal_label == 0 || proposal_label == 1 || proposal_label == 2) {
+        //         box_proposals_valid.push_back(box_proposals[i]);
+        //     }
+
+        //     if (proposal_label == 0) {
+        //         cv::rectangle(
+        //             visualization_image, 
+        //             box_proposals[i], 
+        //             cv::Scalar(255, 0, 0)
+        //         );
+        //     }
+            
+        //     if (proposal_label == 1) {
+        //         cv::rectangle(
+        //             visualization_image, 
+        //             box_proposals[i], 
+        //             cv::Scalar(0, 255, 0)
+        //         );
+        //     } 
+            
+        //     if (proposal_label == 2) {
+        //         cv::rectangle(
+        //             visualization_image, 
+        //             box_proposals[i], 
+        //             cv::Scalar(0, 0, 255)
+        //         );
+        //     }
+        // }
 
         // printf("BBox :: i= %i, label= %i, conf= %f\n", i, proposal_label, proposal_confidence);
         cv::imshow("Output", visualization_image);
         cv::waitKey();
 
         // Non-Maximum Suppression
-        for(int l = 0; l < n_classes; l++) {
+        for(int l = 0; l < n_classes + 1; l++) {
             std::vector<cv::Rect> resRects;
-            nms(box_proposals_per_label[l], resRects, 0.3f);
+            if (l == n_classes)
+                nms(box_proposals_valid, resRects, 0.01f);
+            else
+                nms(box_proposals_per_label[l], resRects, 0.01f);
             
             // Reset Preview Image
             visualization_image = image.clone();

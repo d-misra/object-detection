@@ -14,10 +14,10 @@
 
 namespace tdcv {
     HOG::HOG() : 
-        _winSize(cv::Size(120, 120)), 
-        _blockSize(cv::Size(20, 20)),
-        _blockStride(cv::Size(10, 10)),
-        _cellSize(cv::Size(10, 10)),
+        _winSize(cv::Size(128, 128)), 
+        _blockSize(cv::Size(32, 32)),
+        _blockStride(cv::Size(16, 16)),
+        _cellSize(cv::Size(16, 16)),
         _nbins (9) {
             _hog = cv::HOGDescriptor(_winSize, _blockSize, _blockStride, _cellSize, _nbins,
             _derivAperture, _winSigma, _histogramNormType, _L2HysThreshold,
@@ -36,7 +36,7 @@ namespace tdcv {
         // GaussianBlur(src, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
 
         // Scale To Size(120, 120) Image
-        cv::resize(img_gray, img_gray_resized, cv::Size(120, 120), 0, 0, cv::INTER_AREA);
+        cv::resize(img_gray, img_gray_resized, cv::Size(128, 128), 0, 0, cv::INTER_AREA);
 
         // Compute HOG
         _hog.compute(img_gray_resized, descriptors);

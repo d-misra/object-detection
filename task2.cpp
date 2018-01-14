@@ -5,6 +5,7 @@
 
 #include "HOG.cpp"
 #include "RandomForrest.cpp"
+#include "SVM.cpp"
 #include "Dataset.cpp"
 #include "external/evaluation.h"
 #include "helpers.cpp"
@@ -34,7 +35,7 @@ int main(int argc, char** argv)
 	}
 
     const int n_classes = 6;
-    const int n_trees = 24;
+    const int n_trees = 8;
     
     // HOG
     tdcv::HOG hog;
@@ -44,7 +45,8 @@ int main(int argc, char** argv)
     tdcv::Dataset testing_set(n_classes);
 
     // Classifier
-    tdcv::RandomForrest classifier(n_trees, n_classes);
+    // tdcv::RandomForrest classifier(n_trees, n_classes);
+    tdcv::SVM classifier;
 
     // Testing placeholders
     cv::Mat1f testing_features;
@@ -68,10 +70,11 @@ int main(int argc, char** argv)
     printf("Predicted testing features ...\n");
     
     // Convert Mat labels in to vec<int> labels for evaluation
-    std::vector<int> vec_predicted_labels, vec_testing_labels;
+    std::vector<int> vec_predicted_labels;
+    std::vector<int> vec_testing_labels;
     for (int i = 0; i < testing_labels.size().height; i++) {
-        vec_predicted_labels.push_back(predicted_labels.at<int>(i, 0));
-        vec_testing_labels.push_back(testing_labels.at<int>(i, 0));
+        vec_predicted_labels.push_back(predicted_labels.at<int>(i));
+        vec_testing_labels.push_back(testing_labels.at<int>(i));
     }
 
     // Evaluate classifier
