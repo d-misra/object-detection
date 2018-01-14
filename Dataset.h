@@ -3,6 +3,10 @@
 
 #include <opencv2/ml.hpp>
 #include <vector>
+#include <boost/filesystem.hpp>
+
+// Boost File System
+namespace bfs = boost::filesystem;
 
 namespace tdcv {
     class Dataset {

@@ -7,6 +7,7 @@
 #include "RandomForrest.cpp"
 #include "Dataset.cpp"
 #include "external/evaluation.h"
+#include "helpers.cpp"
 
 // Boost File System
 namespace bfs = boost::filesystem;
@@ -16,35 +17,6 @@ static void help() {
     "./task2 data_path forrest_name" << std::endl <<
     "-- data_path: a folder where there is task2/train and task2/test folders" << std::endl <<
     "-- forrest_name: a prefix for the forrest to be saved in" << std::endl;
-}
-
-void load_dataset(tdcv::HOG& hog, bfs::path data_path, std::string phase, int n_classes, tdcv::Dataset& dataset) {
-    std::vector<float> descriptors;
-
-    for (int i = 0; i < n_classes; i++)
-    {
-        // intializing the class folder
-        bfs::path classFolder = data_path / phase / ("0" + std::to_string(i));
-        bfs::directory_iterator classIterator{classFolder};
-
-        // for each class calculate the hog and add them together the corresponding label
-        while(classIterator != bfs::directory_iterator{}) {
-            // Get image file path
-            bfs::path imageFile = *classIterator++;
-            
-            // Read the image
-            cv::Mat image = cv::imread(imageFile.c_str(), CV_LOAD_IMAGE_COLOR);
-            
-            // Compute the hog features
-            hog.computeHOG(image, descriptors);
-            
-            //forming mat1f array to add the values to feats matrix,basically type casting the descriptors
-            cv::Mat1f descriptors_mat(1, descriptors.size(), descriptors.data());
-
-            // Add image to the training set
-            dataset.push_back(descriptors_mat, i);
-        }
-    }
 }
 
 int main(int argc, char** argv)
@@ -79,8 +51,8 @@ int main(int argc, char** argv)
     cv::Mat testing_labels, predicted_labels, predicted_confidences;
 
     // Load Training & Testing Datasets
-    load_dataset(hog, data_path / "task2", "train", 6, training_set);
-    load_dataset(hog, data_path / "task2", "test", 6, testing_set);
+    tdcv::helpers::load_dataset(hog, data_path / "task2" / "train", n_classes, training_set);
+    tdcv::helpers::load_dataset(hog, data_path / "task2" / "test", n_classes, testing_set);
 
     printf("Loaded datasets ...\n");
 

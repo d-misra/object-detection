@@ -20,6 +20,7 @@ namespace tdcv {
         // Training / Prediction
         void train(Dataset& dataset);
         void predict(const cv::Mat1f& features, cv::Mat& predicted_labels, cv::Mat& predicted_confidences);
+        void predict_one(const cv::Mat1f& features, int &predicted_label, float &predicted_confidence);
 
     private:  
         std::vector<cv::Ptr<cv::ml::DTrees> > _decision_trees;

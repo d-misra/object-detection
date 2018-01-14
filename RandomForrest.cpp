@@ -31,6 +31,7 @@ namespace tdcv {
 
             printf("RandomForrest::RandomForrest (train) tree= %i\n", i+1);
             dataset.random_subsample(features, labels);
+            // dataset.as_matrix(features, labels);
 
             _decision_trees[i]->train(cv::ml::TrainData::create(
                 features,
@@ -72,6 +73,29 @@ namespace tdcv {
             predicted_labels.push_back(best_prediction);
             predicted_confidences.push_back(best_confidence);
         }
+    }
+
+    void RandomForrest::predict_one(const cv::Mat1f& features, int &predicted_label, float &predicted_confidence) {
+        std::vector<float> tree_predictions(_nLabels, 0);
+        int prediction;
+        float confidence;
+
+        for (int j = 0; j < _decision_trees.size(); j++) {
+            prediction = _decision_trees[j]->predict(features);
+            tree_predictions[prediction]++;
+        }
+
+        cv::Mat softmax_predictions(tree_predictions);
+        softmax_predictions /= _decision_trees.size();
+
+        std::cout << softmax_predictions << std::endl;
+
+        double minVal, maxVal;
+        cv::Point minLoc, maxLoc;
+        cv::minMaxLoc(softmax_predictions, &minVal, &maxVal, &minLoc, &maxLoc);
+
+        predicted_label = maxLoc.y;
+        predicted_confidence = maxVal;
     }
 
     void RandomForrest::save(std::string ForestName) {
