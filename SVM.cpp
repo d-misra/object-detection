@@ -2,6 +2,7 @@
 #define SVM_CPP
 
 #include "SVM.h"
+#include "Logger.h"
 #include "Dataset.cpp"
 
 #include <vector>
@@ -32,7 +33,7 @@ namespace tdcv {
     }
 
     void SVM::predict(const cv::Mat1f& features, cv::Mat& predicted_labels, cv::Mat& predicted_confidences) {
-        printf("Size: (%i, %i)", features.row(0).size().height, features.row(0).size().width);
+        logger->debug("features.size()= ({}, {})", features.row(0).size().height, features.row(0).size().width);
         for (int i = 0; i < features.size().height; i++) {
             predicted_labels.push_back((int)_svm->predict(features.row(i).reshape(1,1)));
             predicted_confidences.push_back(1.f);
