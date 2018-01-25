@@ -11,11 +11,17 @@
 namespace tdcv {
     class RandomForrest {
     public:
-        RandomForrest(int n_trees = 16, int n_labels = 6, int _maxDepth = 10, int _cvFold = 0, int _minSampleCount = 2);
+        RandomForrest(
+            int n_trees = 16, 
+            int n_labels = 6, 
+            int _maxDepth = 10,
+            int _cvFold = 0, 
+            int _minSampleCount = 2
+        );
 
         // Save & Load Forrest
         void save(std::string ForestName);
-        void load(std::string ForestName, int nbr_trees);
+        void load(std::string ForestName);
 
         // Training / Prediction
         void train(Dataset& dataset);

@@ -2,12 +2,15 @@
 #define RandomForrest_CPP
 
 #include "RandomForrest.h"
+#include "Logger.h"
 #include "Dataset.cpp"
 
 #include <vector>
 #include <string>
 #include <set>
 #include <opencv2/ml.hpp>
+
+#include "external/glob.h"
 
 namespace tdcv {
     RandomForrest::RandomForrest(int n_trees, int n_labels, int _maxDepth, int _cvFold, int _minSampleCount) : _nLabels(n_labels) {
@@ -29,15 +32,23 @@ namespace tdcv {
             features.release();
             labels.release();
 
-            printf("RandomForrest::RandomForrest (train) tree= %i\n", i+1);
-            dataset.random_subsample(features, labels);
             // dataset.as_matrix(features, labels);
+            dataset.random_subsample(features, labels);
+            
+            // dataset.as_matrix_shuffle(features, labels);
+
+            // for(int k = 0; k < 2; k++) {
+                // features.release();
+                // labels.release();
+
+            logger->debug("RandomForrest::RandomForrest (train) tree= {} -- features= ({}, {})", i+1, features.rows, features.cols);
 
             _decision_trees[i]->train(cv::ml::TrainData::create(
                 features,
                 cv::ml::ROW_SAMPLE,
                 labels
             ));
+            // }
         }
     }
 
@@ -88,7 +99,7 @@ namespace tdcv {
         cv::Mat softmax_predictions(tree_predictions);
         softmax_predictions /= _decision_trees.size();
 
-        std::cout << softmax_predictions << std::endl;
+        // std::cout << softmax_predictions << std::endl;
 
         double minVal, maxVal;
         cv::Point minLoc, maxLoc;
@@ -104,9 +115,15 @@ namespace tdcv {
         }
     }
 
-    void RandomForrest::load(std::string ForestName, int nbr_trees) {
-        for (int tree_idx = 0; tree_idx < nbr_trees; tree_idx++) {
-            _decision_trees[tree_idx] = cv::ml::DTrees::load(ForestName + std::to_string(tree_idx));
+    void RandomForrest::load(std::string ForestName) {
+        std::vector< std::string > tree_files = external::glob(ForestName);
+
+        logger->debug("Found {} matching trees ...", tree_files.size());
+
+        _decision_trees.clear();
+
+        for (int tree_idx = 0; tree_idx < tree_files.size(); tree_idx++) {
+            _decision_trees.push_back(cv::ml::DTrees::load(tree_files[tree_idx]));
         }
     }
 };
