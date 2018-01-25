@@ -31,6 +31,8 @@ int main(int argc, char** argv)
     const bfs::path image_file = data_path / "/task1/obj1000.jpg";
     
     cv::Mat image = cv::imread(image_file.c_str(), CV_LOAD_IMAGE_COLOR);
+    cv::resize(image, image, cv::Size(WIN_SIZE, WIN_SIZE), 0, 0, cv::INTER_AREA);
+    
     std::vector<float> descriptors;
 
     tdcv::HOG hog;
