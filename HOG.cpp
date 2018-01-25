@@ -2,6 +2,7 @@
 #define HOG_CPP
 
 #include "HOG.h"
+#include "Logger.h"
 
 #include <vector>
 #include <string>
@@ -12,18 +13,28 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+/*
+*   Following the qualitative study presented by the author:
+*   Source: https://lear.inrialpes.fr/people/triggs/pubs/Dalal-cvpr05.pdf
+*/
+#define CELL_SIZE 12
+#define BLOCK_SIZE 2 * CELL_SIZE        // 12
+#define BLOCK_STRIDE BLOCK_SIZE / 2     // 6
+#define WIN_SIZE BLOCK_SIZE * 2        // 120
+
 namespace tdcv {
     HOG::HOG() : 
-        _winSize(cv::Size(128, 128)), 
-        _blockSize(cv::Size(32, 32)),
-        _blockStride(cv::Size(16, 16)),
-        _cellSize(cv::Size(16, 16)),
+        _winSize(cv::Size(WIN_SIZE, WIN_SIZE)), 
+        _blockSize(cv::Size(BLOCK_SIZE, BLOCK_SIZE)),
+        _blockStride(cv::Size(BLOCK_STRIDE, BLOCK_STRIDE)),
+        _cellSize(cv::Size(CELL_SIZE, CELL_SIZE)),
         _nbins (9) {
+            logger->debug("HOG :: win_size: {} -- block_size: {} -- block_stride: {} -- cell_size: {}", WIN_SIZE, BLOCK_SIZE, BLOCK_STRIDE, CELL_SIZE);
             _hog = cv::HOGDescriptor(_winSize, _blockSize, _blockStride, _cellSize, _nbins,
             _derivAperture, _winSigma, _histogramNormType, _L2HysThreshold,
             _gammaCorrection, _nlevels, _signedGradient);
         }
-
+ 
     cv::HOGDescriptor& HOG::getHogDetector() {
         return _hog;
     }
@@ -33,10 +44,10 @@ namespace tdcv {
         cv::cvtColor(img, img_gray, CV_BGR2GRAY);
         
         // 2. Apply some blur (optional)
-        // GaussianBlur(src, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
+        // cv::GaussianBlur(img_gray, img_gray, cv::Size(3, 3), 0, 0, cv::BORDER_DEFAULT);
 
         // Scale To Size(120, 120) Image
-        cv::resize(img_gray, img_gray_resized, cv::Size(128, 128), 0, 0, cv::INTER_AREA);
+        cv::resize(img_gray, img_gray_resized, cv::Size(WIN_SIZE, WIN_SIZE), 0, 0, cv::INTER_AREA);
 
         // Compute HOG
         _hog.compute(img_gray_resized, descriptors);
