@@ -13,6 +13,9 @@ WS 2017/18
 ## Introduction
 <img src="selsearch.jpeg" />
 
+## Pipeline
+<img src="Object Detection.png" />
+
 ## Compile The Code
 
 In order to build the project, you need to run:
