@@ -2,12 +2,11 @@
 
 Yehya Abouelnaga, Balamurugan Thambiraja, Kamel Guerda
 
-```
-_Supervised By_ Dr. Slobodan Ilic
-Tracking & Detection in Computer Vision
-Technical University of Munich
+
+_Supervised By_ Dr. Slobodan Ilic<br/>
+Tracking & Detection in Computer Vision<br/>
+Technical University of Munich (TUM)<br/>
 WS 2017/18
-```
 
 ## Introduction
 <img src="selsearch.jpeg" />
