@@ -104,7 +104,7 @@ void load_cache_selective_search(std::vector<cv::Rect>& proposals, std::string n
 
 int main(int argc, char** argv)
 {
-    // spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::debug);
 
 	if (argc < 2) {
         help(argv[0]);
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
     // classifier.train(training_set);
 
     logger->info("Loading saved classifier ...");
-    classifier.load("models/rf_aug_100_*");
+    classifier.load("models/exp_deep_rf_128_*");
 
     // Region Proposal
     tdcv::RegionProposal selective_search;

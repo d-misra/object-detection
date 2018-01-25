@@ -14,7 +14,7 @@ namespace tdcv {
         RandomForrest(
             int n_trees = 16, 
             int n_labels = 6, 
-            int _maxDepth = 10,
+            int _maxDepth = 200,
             int _cvFold = 0, 
             int _minSampleCount = 2
         );
