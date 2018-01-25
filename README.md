@@ -4,6 +4,9 @@ Yehya Abouelnaga, Balamurugan Thambiraja, Kamel Guerda
 
 Prof. Dr. Slobodan Ilic
 
+## Introduction
+<img src="selsearch.jpeg" />
+
 ## Compile The Code
 
 In order to build the project, you need to run:
