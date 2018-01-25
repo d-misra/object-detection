@@ -14,9 +14,9 @@ WS 2017/18
 <img src="selsearch.jpeg" />
 
 ## Pipeline
-<p style='text-align: center;'>
+<center>
   <img src="Object Detection.png" />
-</p>
+</center>
 
 ## Compile The Code
 
