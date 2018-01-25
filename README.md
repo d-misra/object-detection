@@ -1,4 +1,7 @@
-# TDCV Exercise 2
+# TDCV Exercise 2: Object Detection
+
+Yehya Abouelnaga, Balamurugan Thambiraja, Kamel Guerda
+Prof. Dr. Slobodan Ilic
 
 ## Compile The Code
 
