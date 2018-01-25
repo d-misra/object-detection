@@ -2,12 +2,12 @@
 
 Yehya Abouelnaga, Balamurugan Thambiraja, Kamel Guerda
 
-<code>
+```
 _Supervised By_ Dr. Slobodan Ilic
 Tracking & Detection in Computer Vision
 Technical University of Munich
 WS 2017/18
-</code>
+```
 
 ## Introduction
 <img src="selsearch.jpeg" />
