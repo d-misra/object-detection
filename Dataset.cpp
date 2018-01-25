@@ -73,6 +73,31 @@ namespace tdcv {
             }
         }
     }
+
+    void Dataset::as_matrix_shuffle(cv::Mat1f& features, cv::Mat& labels) {
+        std::vector <int> seeds;
+        cv::Mat1f features_ordered;
+        cv::Mat labels_ordered;
+
+        for (int curr_class = 0; curr_class < _dataset.size(); curr_class++)
+        {
+            for(int i = 0; i < _dataset[curr_class].size().height; i++) {
+                features_ordered.push_back(_dataset[curr_class].row(i));
+                labels_ordered.push_back(curr_class);
+            }
+        }
+
+        for (int idx = 0; idx < features_ordered.rows; idx++)
+            seeds.push_back(idx);
+
+        cv::randShuffle(seeds);
+
+        for (int idx = 0; idx < seeds.size(); idx++)
+        {
+            features.push_back(features_ordered.row(idx));
+            labels.push_back(labels_ordered.row(idx));
+        }
+    }
 };
 
 #endif // Dataset_CPP
