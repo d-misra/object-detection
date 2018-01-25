@@ -7,6 +7,7 @@
 #include <opencv2/ximgproc/segmentation.hpp>
 
 #include "RegionProposal.h"
+#include "Logger.h"
 
 namespace tdcv {
     RegionProposal::RegionProposal(bool use_threads, int n_threads) {
@@ -19,22 +20,22 @@ namespace tdcv {
     }
 
     void RegionProposal::propose_regions(cv::Mat& search_image, std::vector<cv::Rect>& bounding_boxes, bool fast) {
-        printf("RegionProposal::propose_regions -- Start\n");
+        logger->debug("RegionProposal::propose_regions -- Start");
 
-        printf("RegionProposal::propose_regions -- Setting Base Image\n");
+        logger->debug("RegionProposal::propose_regions -- Setting Base Image");
         _selectiveSearch->setBaseImage(search_image);
 
-        printf("RegionProposal::propose_regions -- Setting Fast/Quality Setting\n");
+        logger->debug("RegionProposal::propose_regions -- Setting Fast/Quality Setting");
         if(fast) {
             _selectiveSearch->switchToSelectiveSearchFast();
         } else {
             _selectiveSearch->switchToSelectiveSearchQuality();
         }
 
-        printf("RegionProposal::propose_regions -- Process\n");
+        logger->debug("RegionProposal::propose_regions -- Process");
         _selectiveSearch->process(bounding_boxes);
 
-        printf("RegionProposal::propose_regions -- End :: bounding_boxes.size()= %i\n", bounding_boxes.size());
+        logger->info("RegionProposal::propose_regions -- End :: bounding_boxes.size()= {}", bounding_boxes.size());
     }
 
     void RegionProposal::visualize_regions(cv::Mat& search_image, bool fast) {
