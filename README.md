@@ -1,4 +1,17 @@
-# TDCV Exercise 2
+# TDCV Exercise 2: Object Detection
+
+Yehya Abouelnaga, Balamurugan Thambiraja, Kamel Guerda
+
+
+__Supervised By:__
+
+Dr. Slobodan Ilic<br/>
+Tracking & Detection in Computer Vision<br/>
+Technical University of Munich (TUM)<br/>
+WS 2017/18
+
+## Introduction
+<img src="selsearch.jpeg" />
 
 ## Compile The Code
 
