@@ -3,6 +3,12 @@
 *.swp
 *.jpg
 *.vscode
+.DS_Store
+*.csv
+*.tex
+cache/
+output/
+models/
 task1
 task2
 task3
